@@ -1,17 +1,27 @@
 import pandas as pd
 import numpy as np
 
-df1=pd.read_excel(r"F:\Python\Input sheet.xlsx","Bowler_Runs", header=0)
+df1=pd.read_excel(r"Input sheet.xlsx","Bowler_Runs", header=0)
+df2=pd.read_excel(r"Input sheet.xlsx","Bowler_Runs_d", header=0)
 
 #print(pd.isnull(df1['2015']))
 #print(df1.count(axis=1)-1)
 #print(df1.mean(axis=1))
 #df1.fillna(df1.mean(axis=1),inplace=True)
-df1.fillna(inplace=True,method='ffill')
-print(df1)
-exit()
 
-df1['No of seasons']=df1.count(axis=1)-1
-df1['Last 3 mean']= df1['2015']+df1['2016']+df1['2017']/3
-df1['Score']=((df1['Last 3 mean']*3)+(df1['No of seasons']*2))/5
-df1.to_csv('Output.csv',sep=',')
+def gen(a,df1):
+    df1['No of seasons']=df1.count(axis=1)-1
+    m=df1.mean(axis=1)
+    for i, col in enumerate(df1):
+             # using i allows for duplicate columns
+             # inplace *may* not always work here, so IMO the next line is preferred
+             # df.iloc[:, i].fillna(m, inplace=True)
+             df1.iloc[:, i] = df1.iloc[:, i].fillna(m)
+#df1.fillna(inplace=True,method='ffill')
+    df1['Last 3 mean']=20-( (df1['2015']+df1['2016']+df1['2017'])/3)
+    df1['Score']=((df1['Last 3 mean']*3)+(df1['No of seasons']*2))/5
+    filepath=r'C:\Users\512491\Desktop\IPL2\IPL_'
+    df1.to_csv(filepath+a+'.csv',sep=',',index=0)
+    
+gen('Overall runs',df1)
+gen('Death over runs',df2)
